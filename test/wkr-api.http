@@ -1,0 +1,66 @@
+#
+# Test script for wkr API test
+#
+
+@baseUrl=http://localhost:8000
+@token=login.response.body.data.token
+
+# # # # # # # # # # # # # # # # #
+# Ping health check
+# @name ping
+#
+GET {{baseUrl}}/api/ping
+
+
+###
+
+# @name login
+POST {{baseUrl}}/api/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "admin"
+}
+
+
+###
+
+# @name jobs
+GET {{baseUrl}}/api/jobs
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+
+# @name job_details
+GET {{baseUrl}}/api/job/:job_id
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+
+# @name job_run_details
+GET {{baseUrl}}/api/job/:job_id/:run_id
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+
+# @name job_run_execute
+POST {{baseUrl}}/api/job/:job_id/run
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "arguments": [
+        "--configuration:Release",
+        "--outputPath:./build/"
+    ]
+}
+
+
+###
