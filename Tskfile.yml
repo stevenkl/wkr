@@ -1,3 +1,8 @@
 name: Wkr
 env:
   GOOS: windows
+  WKR_HOST: localhost
+  WKR_PORT: 8000
+  WKR_DATA: .\wkr_data
+  WKR_ADMIN_USER: admin
+  WKR_ADMIN_PASSWORD: admin

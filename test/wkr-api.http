@@ -35,7 +35,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_details
-GET {{baseUrl}}/api/job/:job_id
+GET {{baseUrl}}/api/job/{{$guid}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -43,7 +43,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_run_details
-GET {{baseUrl}}/api/job/:job_id/:run_id
+GET {{baseUrl}}/api/job/{{$guid}}/{{$guid}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
