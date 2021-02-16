@@ -8,6 +8,7 @@ import (
 	"github.com/stevenkl/tcl.go/pkg/tcl"
 )
 
+// AppConfig represents the global configuration for Wkr
 type AppConfig struct {
 	Host          string
 	Port          int
@@ -16,25 +17,32 @@ type AppConfig struct {
 	AdminPassword string
 }
 
-func New() (AppConfig, error) {
-	appcfg := AppConfig{}
+// New returns a newly AppConfig
+func New() AppConfig {
+	appcfg := new(AppConfig)
+
+	return *appcfg
+}
+
+// Parse parses the given string as filepath for configuration
+func (cfg *AppConfig) Parse(filePath string) error {
 
 	pwd, _ := os.Getwd()
-	cfgFile := filepath.Join(pwd, "wkr.config")
+	cfgFile := filepath.Join(pwd, filePath)
 	cfgFileContent, err := ioutil.ReadFile(cfgFile)
 	if err != nil {
-		return appcfg, err
+		return err
 	}
 
 	i := tcl.InitInterp()
-	i.RegisterCommand("server", serverCommand, &appcfg)
-	i.RegisterCommand("data", dataCommand, &appcfg)
-	i.RegisterCommand("admin", adminCommand, &appcfg)
+	i.RegisterCommand("server", serverCommand, cfg)
+	i.RegisterCommand("data", dataCommand, cfg)
+	i.RegisterCommand("admin", adminCommand, cfg)
 
 	_, errr := i.Eval(string(cfgFileContent))
 	if errr != nil {
-		return appcfg, errr
+		return errr
 	}
 
-	return appcfg, nil
+	return nil
 }

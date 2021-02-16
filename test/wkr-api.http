@@ -3,19 +3,19 @@
 #
 
 @baseUrl=http://localhost:8000
-@token=login.response.body.data.token
+@token={{login.response.body.$.data}}
 
 # # # # # # # # # # # # # # # # #
 # Ping health check
 # @name ping
 #
-GET {{baseUrl}}/api/ping
+GET {{baseUrl}}/ping
 
 
 ###
 
 # @name login
-POST {{baseUrl}}/api/login
+POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
@@ -27,7 +27,7 @@ Content-Type: application/json
 ###
 
 # @name jobs
-GET {{baseUrl}}/api/jobs
+GET {{baseUrl}}/jobs
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -35,7 +35,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_details
-GET {{baseUrl}}/api/job/{{$guid}}
+GET {{baseUrl}}/jobs/hello
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -43,7 +43,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_run_details
-GET {{baseUrl}}/api/job/{{$guid}}/{{$guid}}
+GET {{baseUrl}}/job/{{$guid}}/{{$guid}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -51,7 +51,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_run_execute
-POST {{baseUrl}}/api/job/:job_id/run
+POST {{baseUrl}}/job/:job_id/run
 Content-Type: application/json
 Authorization: Bearer {{token}}
 

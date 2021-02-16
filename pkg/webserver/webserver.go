@@ -1,33 +1,30 @@
 package webserver
 
 import (
-	"fmt"
-
 	"github.com/gofiber/fiber/v2"
-	"github.com/stevenkl/wkr/pkg/models"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	jwtware "github.com/gofiber/jwt/v2"
+	"github.com/stevenkl/wkr/pkg/config"
 )
 
-// RegisterRoutes registers all application routes
-func RegisterRoutes(app *fiber.App) error {
-	app.Get("/api/ping", pingHandler)
-	app.Post("/api/login", loginHandler)
-	app.Get("/api/jobs", jobsHandler)
+var serverConfig *config.AppConfig
 
-	return nil
-}
+func New(config *config.AppConfig) *fiber.App {
+	app := fiber.New()
+	serverConfig = config
 
-func pingHandler(c *fiber.Ctx) error {
-	return c.SendString("Pong")
-}
+	app.Use(logger.New())
+	app.Get("/ping", statusPingHandler)
+	app.Post("/login", userLoginHandler)
 
-func loginHandler(c *fiber.Ctx) error {
-	admin := new(models.AdminModel)
-	if err := c.BodyParser(admin); err != nil {
-		return err
-	}
-	return c.SendString(fmt.Sprintf("Hello, %s!", admin.Name))
-}
+	jobsApp := fiber.New()
+	jobsApp.Use(jwtware.New(jwtware.Config{
+		SigningKey: []byte("secret"),
+	}))
+	jobsApp.Get("/", jobsIndexHandler)
+	jobsApp.Get("/:job_id", jobsDetailsHandler)
 
-func jobsHandler(c *fiber.Ctx) error {
-	return c.SendString("Listing all jobs.")
+	app.Mount("/jobs", jobsApp)
+
+	return app
 }
