@@ -2,6 +2,7 @@ package database
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -58,6 +59,36 @@ func (d *Database) GetJob(id string, job *models.JobModel) error {
 	}
 
 	return nil
+}
+
+func (d *Database) SaveJob(job *models.JobModel) error {
+	filePath := filepath.Join(d.jobsPath, job.ID.String()+".json")
+	_, err1 := os.Stat(filePath)
+	if err1 != nil {
+		data, err2 := json.Marshal(job)
+		if err2 != nil {
+			return err2
+		}
+		err3 := ioutil.WriteFile(filePath, data, 0666)
+		if err3 != nil {
+			return err3
+		}
+		return nil
+	}
+	return errors.New("Job already exists")
+}
+
+func (d *Database) DeleteJob(job *models.JobModel) error {
+	filePath := filepath.Join(d.jobsPath, job.ID.String()+".json")
+	_, err1 := os.Stat(filePath)
+	if err1 != nil {
+		return err1
+	}
+	if err2 := os.Remove(filePath); err2 != nil {
+		return err2
+	}
+	return nil
+
 }
 
 // GetAllJobs entries from the jobs database

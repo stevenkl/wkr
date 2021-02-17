@@ -1,7 +1,9 @@
 package models
 
+import "github.com/rs/xid"
+
 type JobModel struct {
-	ID            string                   `json:"id"`
+	ID            xid.ID                   `json:"id"`
 	Title         string                   `json:"title"`
 	CreatedAt     string                   `json:"created_at"`
 	LastExecution string                   `json:"last_execution"`

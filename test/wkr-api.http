@@ -4,7 +4,7 @@
 
 @baseUrl=http://localhost:8000
 @token={{login.response.body.$.data}}
-@test_job_id=hello
+@test_job_id=c0mkomgh4fe2770h8i10
 @test_run_id=1
 
 # # # # # # # # # # # # # # # # #
@@ -28,7 +28,27 @@ Content-Type: application/json
 
 ###
 
-# @name jobs
+# @name create_job
+POST {{baseUrl}}/jobs/new
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "title": "New job {{$randomInt 1 120}}",
+    "params": {
+        "executable": "cmd.exe",
+        "arguments": [
+            "/c",
+            "echo/Hello World."
+        ]
+    }
+}
+
+
+###
+
+
+# @name get_all_jobs
 GET {{baseUrl}}/jobs
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -36,7 +56,7 @@ Authorization: Bearer {{token}}
 
 ###
 
-# @name job_details
+# @name get_job_details
 GET {{baseUrl}}/jobs/{{test_job_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -44,7 +64,7 @@ Authorization: Bearer {{token}}
 
 ###
 
-# @name job_run_details
+# @name get_job_execution_results
 GET {{baseUrl}}/jobs/{{test_job_id}}/{{test_run_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
@@ -52,17 +72,20 @@ Authorization: Bearer {{token}}
 
 ###
 
-# @name job_run_execute
-POST {{baseUrl}}/job/{{test_job_id}}/run
+# @name execute_job
+GET {{baseUrl}}/jobs/{{test_job_id}}/run
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+
+
+# @name delete_job
+POST {{baseUrl}}/jobs/delete
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "arguments": [
-        "--configuration:Release",
-        "--outputPath:./build/"
-    ]
+    "id": "{{get_all_jobs.response.body.$.data.0.id}}"
 }
-
-
-###

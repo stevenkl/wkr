@@ -22,7 +22,10 @@ func New(config *config.AppConfig) *fiber.App {
 		SigningKey: []byte("secret"),
 	}))
 	jobsApp.Get("/", jobsIndexHandler)
+	jobsApp.Post("/new", createNewJobHandler)
+	jobsApp.Post("/delete", deleteJobHandler)
 	jobsApp.Get("/:job_id", jobsDetailsHandler)
+	jobsApp.Get("/:job_id/run", executeJobHandler)
 	jobsApp.Get("/:job_id/:run_id", jobExecutionsHandler)
 
 	app.Mount("/jobs", jobsApp)
