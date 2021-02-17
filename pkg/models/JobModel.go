@@ -1,5 +1,10 @@
 package models
 
 type JobModel struct {
-	ID string `json:"id"`
+	ID            string                   `json:"id"`
+	Title         string                   `json:"title"`
+	CreatedAt     string                   `json:"created_at"`
+	LastExecution string                   `json:"last_execution"`
+	Executions    []string                 `json:"executions"`
+	Parameters    ExecutionParametersModel `json:"params"`
 }

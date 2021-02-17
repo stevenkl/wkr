@@ -13,16 +13,20 @@ import (
 )
 
 var (
+	// ServerConfig is a link to package main.
 	ServerConfig config.AppConfig
-	Instance     *Database
+	// Instance of Database, accessible after calling database.Init()
+	Instance *Database
 )
 
+// Database struct describes the (file-based) database
 type Database struct {
 	storage     string
 	jobsPath    string
 	resultsPath string
 }
 
+// Init database and creates an Instance for later access
 func Init(config *config.AppConfig) error {
 	ServerConfig = *config
 	Instance = new(Database)
@@ -36,7 +40,8 @@ func Init(config *config.AppConfig) error {
 	return nil
 }
 
-func (d *Database) Get(id string, job *models.JobModel) error {
+// GetJob a single entry from the jobs database
+func (d *Database) GetJob(id string, job *models.JobModel) error {
 
 	filePath := filepath.Join(Instance.jobsPath, id+".json")
 	_, err := os.Stat(filePath)
@@ -55,27 +60,52 @@ func (d *Database) Get(id string, job *models.JobModel) error {
 	return nil
 }
 
-func (d *Database) GetAll() []models.JobModel {
+// GetAllJobs entries from the jobs database
+func (d *Database) GetAllJobs() ([]*models.JobModel, error) {
 	files, err := ioutil.ReadDir(d.jobsPath)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	jobs := make([]models.JobModel, 0)
+	jobs := make([]*models.JobModel, 0)
 	for _, f := range files {
-		fmt.Println(f.Name())
 		parts := strings.Split(f.Name(), ".")
-		var job = models.JobModel{}
-		err := d.Get(parts[0], &job)
+		var job = new(models.JobModel)
+		err := d.GetJob(parts[0], job)
 		if err != nil {
-			return nil
+			return nil, err
 		}
-		fmt.Println(job)
 		jobs = append(jobs, job)
+	}
+
+	return jobs, nil
+}
+
+func GetExecutionResult(jobID, runID string, res *models.ExecutionResultModel) error {
+	filePath := filepath.Join(Instance.resultsPath, fmt.Sprintf("%s-%s", jobID, runID)+".json")
+	_, err := os.Stat(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	content, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		fmt.Println(err)
+		return err
+	}
+	err = json.Unmarshal(content, res)
+	if err != nil {
+		fmt.Println(err)
+		return err
 	}
 
 	return nil
 }
 
+func GetAllExecutionResults(jobID string, results []*models.ExecutionResultModel) error {
+	return nil
+}
+
+// makeFolders for the database file structure
 func makeFolders() error {
 	err := os.MkdirAll(Instance.jobsPath, 0666)
 	if err != nil {

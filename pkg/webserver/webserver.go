@@ -23,6 +23,7 @@ func New(config *config.AppConfig) *fiber.App {
 	}))
 	jobsApp.Get("/", jobsIndexHandler)
 	jobsApp.Get("/:job_id", jobsDetailsHandler)
+	jobsApp.Get("/:job_id/:run_id", jobExecutionsHandler)
 
 	app.Mount("/jobs", jobsApp)
 
