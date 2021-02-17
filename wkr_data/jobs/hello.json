@@ -1,0 +1,11 @@
+{
+    "id": "hello",
+    "title": "Hello World Job",
+    "created_at": "2021-02-16T12:00:00.000Z",
+    "last_execution": null,
+    "executions": [],
+    "params": {
+        "executable": "C:\\Host\\bin\\tsk.exe",
+        "arguments": [ "build" ]
+    }
+}

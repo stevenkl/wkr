@@ -4,6 +4,8 @@
 
 @baseUrl=http://localhost:8000
 @token={{login.response.body.$.data}}
+@test_job_id=hello
+@test_run_id=1
 
 # # # # # # # # # # # # # # # # #
 # Ping health check
@@ -35,7 +37,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_details
-GET {{baseUrl}}/jobs/hello
+GET {{baseUrl}}/jobs/{{test_job_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -43,7 +45,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_run_details
-GET {{baseUrl}}/job/{{$guid}}/{{$guid}}
+GET {{baseUrl}}/jobs/{{test_job_id}}/{{test_run_id}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -51,7 +53,7 @@ Authorization: Bearer {{token}}
 ###
 
 # @name job_run_execute
-POST {{baseUrl}}/job/:job_id/run
+POST {{baseUrl}}/job/{{test_job_id}}/run
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
