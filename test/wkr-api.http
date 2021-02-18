@@ -4,7 +4,7 @@
 
 @baseUrl=http://localhost:8000
 @token={{login.response.body.$.data}}
-@test_job_id=c0mkomgh4fe2770h8i10
+@test_job_id={{get_all_jobs.response.body.$.data.0.id}}
 @test_run_id=1
 
 # # # # # # # # # # # # # # # # #
@@ -21,7 +21,7 @@ POST {{baseUrl}}/login
 Content-Type: application/json
 
 {
-    "username": "admin",
+    "name": "admin",
     "password": "admin"
 }
 

@@ -11,5 +11,6 @@ require (
 	github.com/rs/xid v1.2.1 // indirect
 	github.com/stevenkl/tcl.go v0.0.0-20210215153534-871a9f8662af
 	github.com/valyala/fasthttp v1.20.0 // indirect
+	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 )

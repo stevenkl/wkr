@@ -6,7 +6,6 @@ type JobModel struct {
 	ID            xid.ID                   `json:"id"`
 	Title         string                   `json:"title"`
 	CreatedAt     string                   `json:"created_at"`
-	LastExecution string                   `json:"last_execution"`
-	Executions    []string                 `json:"executions"`
+	Executions    int                      `json:"executions"`
 	Parameters    ExecutionParametersModel `json:"params"`
 }

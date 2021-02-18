@@ -1,9 +1,10 @@
 package webserver
 
 import (
-	"fmt"
+	"strconv"
 	"time"
 
+	"github.com/form3tech-oss/jwt-go"
 	"github.com/gofiber/fiber/v2"
 	"github.com/rs/xid"
 	"github.com/stevenkl/wkr/pkg/database"
@@ -11,7 +12,13 @@ import (
 )
 
 func jobsIndexHandler(c *fiber.Ctx) error {
-	// jobs := make([]models.JobModel, 0)
+	user := c.Locals("user").(*jwt.Token)
+	claims := user.Claims.(jwt.MapClaims)
+	group := claims["group"].(string)
+
+	if group != "admin" {
+		return c.SendStatus(fiber.StatusUnauthorized)
+	}
 
 	jobs, err := database.Instance.GetAllJobs()
 	if err != nil {
@@ -39,11 +46,14 @@ func jobsDetailsHandler(c *fiber.Ctx) error {
 
 func jobExecutionsHandler(c *fiber.Ctx) error {
 	jobID := c.Params("job_id")
-	runID := c.Params("run_id")
+	runID, err := strconv.Atoi(c.Params("run_id"))
+	if err != nil {
+		return c.SendStatus(fiber.StatusInternalServerError)
+	}
 
 	execution := new(models.ExecutionResultModel)
-	err := database.GetExecutionResult(jobID, runID, execution)
-	if err != nil {
+	err2 := database.Instance.GetExecutionResult(jobID, runID, execution)
+	if err2 != nil {
 		return c.SendStatus(fiber.StatusNotFound)
 	}
 	return c.JSON(fiber.Map{
@@ -61,7 +71,6 @@ func createNewJobHandler(c *fiber.Ctx) error {
 	dt := time.Now()
 	// 2021-02-17T16:45:48.875Z
 	job.CreatedAt = dt.Format("2006-01-02T15:04:05.000Z")
-	fmt.Println(job)
 
 	if err := database.Instance.SaveJob(job); err != nil {
 		return c.SendStatus(fiber.StatusInternalServerError)

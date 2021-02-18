@@ -111,8 +111,8 @@ func (d *Database) GetAllJobs() ([]*models.JobModel, error) {
 	return jobs, nil
 }
 
-func GetExecutionResult(jobID, runID string, res *models.ExecutionResultModel) error {
-	filePath := filepath.Join(Instance.resultsPath, fmt.Sprintf("%s-%s", jobID, runID)+".json")
+func (d *Database) GetExecutionResult(jobID string, runID int, res *models.ExecutionResultModel) error {
+	filePath := filepath.Join(Instance.resultsPath, fmt.Sprintf("%s-%d", jobID, runID)+".json")
 	_, err := os.Stat(filePath)
 	if err != nil {
 		fmt.Println(err)
@@ -132,8 +132,21 @@ func GetExecutionResult(jobID, runID string, res *models.ExecutionResultModel) e
 	return nil
 }
 
-func GetAllExecutionResults(jobID string, results []*models.ExecutionResultModel) error {
-	return nil
+func (d *Database) GetAllExecutionResults(jobID string) ([]*models.ExecutionResultModel, error) {
+	job := new(models.JobModel)
+	err := d.GetJob(jobID, job)
+	if err != nil {
+		return nil, err
+	}
+	executionResults := make([]*models.ExecutionResultModel, 0)
+	for i := 1; i < job.Executions; i++ {
+		res := new(models.ExecutionResultModel)
+		err := d.GetExecutionResult(job.ID.String(), i, res)
+		if err == nil {
+			executionResults = append(executionResults, res)
+		}
+	}
+	return executionResults, nil
 }
 
 // makeFolders for the database file structure
