@@ -6,15 +6,15 @@ import (
 	"path/filepath"
 
 	"github.com/stevenkl/tcl.go/pkg/tcl"
+	"github.com/stevenkl/wkr/pkg/models"
 )
 
 // AppConfig represents the global configuration for Wkr
 type AppConfig struct {
-	Host          string
-	Port          int
-	Data          string
-	AdminUser     string
-	AdminPassword string
+	Host  string
+	Port  int
+	Data  string
+	Users []models.UserModel
 }
 
 // New returns a newly AppConfig
@@ -36,8 +36,8 @@ func (cfg *AppConfig) Parse(filePath string) error {
 
 	i := tcl.InitInterp()
 	i.RegisterCommand("server", serverCommand, cfg)
-	i.RegisterCommand("data", dataCommand, cfg)
-	i.RegisterCommand("admin", adminCommand, cfg)
+	i.RegisterCommand("storage", storageCommand, cfg)
+	i.RegisterCommand("user", userCommand, cfg)
 
 	_, errr := i.Eval(string(cfgFileContent))
 	if errr != nil {

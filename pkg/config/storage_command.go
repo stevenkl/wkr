@@ -9,13 +9,13 @@ import (
 	"github.com/stevenkl/tcl.go/pkg/tcl"
 )
 
-func dataCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
+func storageCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	if len(argv) != 2 {
 		return "", cmds.ArityErr(i, "data", argv)
 	}
 
 	sub := tcl.InitInterp()
-	sub.RegisterCommand("path", dataPathCommand, pd.(*AppConfig))
+	sub.RegisterCommand("path", storagePathCommand, pd.(*AppConfig))
 	sub.RegisterCommand("env", envCommand, nil)
 	_, err := sub.Eval(argv[1])
 	if err != nil {
@@ -24,7 +24,7 @@ func dataCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	return "", nil
 }
 
-func dataPathCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
+func storagePathCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	if len(argv) != 2 {
 		return "", cmds.ArityErr(i, "data", argv)
 	}
