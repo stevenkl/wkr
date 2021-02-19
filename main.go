@@ -39,16 +39,44 @@ func main() {
 	}
 
 	// Default program execution
+
+	// Loading config from file
 	*configFile, _ = filepath.Abs(*configFile)
 	content, err := ioutil.ReadFile(*configFile)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Parsing config
 	err = config.Parse(string(content))
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(config)
+
+	// Validating config
+	err = config.Validate()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
+	// Do stuff with config state
+	fmt.Println(*config)
+
+	for _, user := range config.Users.Users {
+		fmt.Println(*user)
+	}
+	for _, job := range config.Jobs.Jobs {
+		fmt.Println(*job)
+	}
+}
+
+func generatePasswordHash(password string) (string, error) {
+	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashed), nil
 }
 
 // generateHashCommand is invoked when `wkr -generate-hash` is called

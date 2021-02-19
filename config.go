@@ -30,17 +30,17 @@ type UserConfig struct {
 }
 
 type UsersConfig struct {
-	users []*UserConfig
+	Users []*UserConfig
 }
 
 type JobConfig struct {
-	Name string    `tcl:"JobsNameCommand"`
-	Workdir string `tcl:"JobsWorkdirCommand"`
-	Run string     `tcl:"JobsRunCommand"`
+	Name string    `tcl:"JobNameCommand"`
+	Workdir string `tcl:"JobWorkdirCommand"`
+	Run string     `tcl:"JobRunCommand"`
 }
 
 type JobsConfig struct {
-	jobs []*JobConfig
+	Jobs []*JobConfig
 }
 
 
@@ -51,6 +51,8 @@ func (c *Config) Parse(input string) error {
 	// adding commands
 	i.RegisterCommand("server", ServerCommand, nil)
 	i.RegisterCommand("storage", StorageCommand, nil)
+	i.RegisterCommand("user", UserCommand, nil)
+	i.RegisterCommand("job", JobsCommand, nil)
 	registerGlobalCommands(i)
 	
 	_, err := i.Eval(input)
@@ -60,9 +62,27 @@ func (c *Config) Parse(input string) error {
 	return nil
 }
 
+func (c *Config) Validate() error {
+
+	var err error
+	if err = validateServerConfig(c); err != nil {
+		return err
+	}
+	if err = validateStorageConfig(c); err != nil {
+		return err
+	}
+	if err = validateUsersConfig(c); err != nil {
+		return err
+	}
+	if err = validateJobsConfig(c); err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetByName searches []*UsersConfig.users for a user with the given name
 func (c *UsersConfig) GetByName(name string) (*UserConfig, error) {
-	for _, user := range c.users {
+	for _, user := range c.Users {
 		if user.Name == name {
 			return user, nil
 		}
@@ -72,7 +92,7 @@ func (c *UsersConfig) GetByName(name string) (*UserConfig, error) {
 
 func (c *UsersConfig) GetByGroup(group string) ([]*UserConfig, error) {
 	users := make([]*UserConfig, 0)
-	for _, user := range c.users {
+	for _, user := range c.Users {
 		if user.Group == group {
 			users = append(users, user)
 		}
@@ -87,7 +107,7 @@ func (j *JobConfig) Execute() error {
 }
 
 func (j *JobsConfig) GetByName(name string) (*JobConfig, error) {
-	for _, job := range j.jobs {
+	for _, job := range j.Jobs {
 		if job.Name == name {
 			return job, nil
 		}
