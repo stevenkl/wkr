@@ -2,8 +2,11 @@ package main
 
 import (
 	"errors"
+	
+	"github.com/stevenkl/tcl.go/pkg/tcl"
 )
 
+// Config struct is the global Configuration element
 type Config struct {
 	Server  ServerConfig  `tcl:"ServerCommand"`
 	Storage StorageConfig `tcl:"StorageCommand"`
@@ -30,6 +33,34 @@ type UsersConfig struct {
 	users []*UserConfig
 }
 
+type JobConfig struct {
+	Name string    `tcl:"JobsNameCommand"`
+	Workdir string `tcl:"JobsWorkdirCommand"`
+	Run string     `tcl:"JobsRunCommand"`
+}
+
+type JobsConfig struct {
+	jobs []*JobConfig
+}
+
+
+// Parse parses the given string as a tcl script
+func (c *Config) Parse(input string) error {
+	i := tcl.InitInterp()
+
+	// adding commands
+	i.RegisterCommand("server", ServerCommand, nil)
+	i.RegisterCommand("storage", StorageCommand, nil)
+	registerGlobalCommands(i)
+	
+	_, err := i.Eval(input)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetByName searches []*UsersConfig.users for a user with the given name
 func (c *UsersConfig) GetByName(name string) (*UserConfig, error) {
 	for _, user := range c.users {
 		if user.Name == name {
@@ -49,20 +80,10 @@ func (c *UsersConfig) GetByGroup(group string) ([]*UserConfig, error) {
 	return users, nil
 }
 
-type JobConfig struct {
-	Name string    `tcl:"JobsNameCommand"`
-	Workdir string `tcl:"JobsWorkdirCommand"`
-	Run string     `tcl:"JobsRunCommand"`
-}
-
 func (j *JobConfig) Execute() error {
 	// Trigger execution of job
 
 	return nil
-}
-
-type JobsConfig struct {
-	jobs []*JobConfig
 }
 
 func (j *JobsConfig) GetByName(name string) (*JobConfig, error) {
