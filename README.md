@@ -37,6 +37,20 @@ In each of the main sections (server, storage, user, job) you can use some comma
 
 * `env <VAR_NAME>` - Returns the value of the given environment variable, or an empty string
 
+### Parse & Validate
+
+The configfile must at first be parsed, setting all values from it to the state config.
+After that, some validation is needed. The validation is done by 4 functions:
+
+* `validateServerConfig`
+* `validateStorageConfig`
+* `validateUsersConfig`
+* `validateJobsConfig`
+
+This validation is needed to make sure that `Wkr` can properbly execute with the given config state.
+As an example: It should exist min. one user, otherwise Wkr wouldn't be useful.
+The same goes for the jobs, if there is no job defined, there is no reason why Wkr should run.
+
 
 ## Build
 

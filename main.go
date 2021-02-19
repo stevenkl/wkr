@@ -63,11 +63,18 @@ func main() {
 	// Do stuff with config state
 	fmt.Println(*config)
 
+	fmt.Printf("Server: %s:%d\n", config.Server.Host, config.Server.Port)
+	fmt.Printf("Storage.Path: %s\n", config.Storage.Path)
+
+	fmt.Println("Users:")
 	for _, user := range config.Users.Users {
-		fmt.Println(*user)
+		fmt.Printf("\tName: %s, Group: %s\n", user.Name, user.Group)
 	}
+
+	fmt.Println("Jobs:")
 	for _, job := range config.Jobs.Jobs {
-		fmt.Println(*job)
+		fmt.Printf("\tName: %s, Command: %s\n", job.Name, job.Run)
+		fmt.Printf("\tWorkdir: %s\n", job.Workdir)
 	}
 }
 
