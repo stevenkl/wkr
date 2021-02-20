@@ -16,6 +16,7 @@ func ServerCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error)
 
 	sub.RegisterCommand("host", ServerHostCommand, nil)
 	sub.RegisterCommand("port", ServerPortCommand, nil)
+	registerGlobalCommands(sub)
 	
 	_, err := sub.Eval(argv[1])
 	if err != nil {
@@ -47,6 +48,7 @@ func StorageCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error
 	}
 	sub := tcl.InitInterp()
 	sub.RegisterCommand("path", StoragePathCommand, nil)
+	registerGlobalCommands(sub)
 	_, err := sub.Eval(argv[1])
 	if err != nil {
 		return "", err
@@ -74,6 +76,7 @@ func UserCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	sub.RegisterCommand("name", UserNameCommand, user)
 	sub.RegisterCommand("password", UserPasswordCommand, user)
 	sub.RegisterCommand("group", UserGroupCommand, user)
+	registerGlobalCommands(sub)
 
 	_, err := sub.Eval(argv[1])
 	if err != nil {
@@ -134,6 +137,7 @@ func JobsCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	sub.RegisterCommand("name", JobNameCommand, job)
 	sub.RegisterCommand("workdir", JobWorkdirCommand, job)
 	sub.RegisterCommand("run", JobRunCommand, job)
+	registerGlobalCommands(sub)
 
 	_, err := sub.Eval(argv[1])
 	if err != nil {
