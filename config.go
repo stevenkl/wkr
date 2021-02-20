@@ -24,9 +24,9 @@ type StorageConfig struct {
 }
 
 type UserConfig struct {
-	Name     string `tcl:"UserNameCommand"`
-	Password string `tcl:"UserPasswordCommand"`
-	Group    string `tcl:"UserGroupCommand"`
+	Name     string `json:"username"`
+	Password string `json:"password"`
+	Group    string `json:"group"`
 }
 
 type UsersConfig struct {
@@ -34,9 +34,9 @@ type UsersConfig struct {
 }
 
 type JobConfig struct {
-	Name string    `tcl:"JobNameCommand"`
-	Workdir string `tcl:"JobWorkdirCommand"`
-	Run string     `tcl:"JobRunCommand"`
+	Name string    `json:"name"`
+	Workdir string `josn:"workdir"`
+	Run string     `json:"run"`
 }
 
 type JobsConfig struct {
