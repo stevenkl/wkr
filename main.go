@@ -86,22 +86,34 @@ func generatePasswordHash(password string) (string, error) {
 	return string(hashed), nil
 }
 
+func validatePasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		return false
+	}
+	return true
+}
+
 // generateHashCommand is invoked when `wkr -generate-hash` is called
 func generateHashCommand() {
-	password := os.Args[2]
-	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
+	if len(os.Args) != 3 {
+		log.Fatal("Argument count wrong!")
+	}
+	hashed, err := generatePasswordHash(os.Args[2])
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(hashed))
+	fmt.Println(hashed)
 }
 
 // validateHashCommand is invoked when `wkr -validate-hash` is called
 func validateHashCommand() {
+	if len(os.Args) != 4 {
+		log.Fatal("Argument count wrong!")
+	}
 	password := os.Args[2]
 	hash     := os.Args[3]
-	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	if err != nil {
+	if ok := validatePasswordHash(password, hash); !ok {
 		fmt.Println("Password and Hash don't match!")
 		os.Exit(1)
 	}
