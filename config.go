@@ -2,7 +2,8 @@ package main
 
 import (
 	"errors"
-	
+
+	"github.com/rs/xid"
 	"github.com/stevenkl/tcl.go/pkg/tcl"
 )
 
@@ -15,8 +16,11 @@ type Config struct {
 }
 
 type ServerConfig struct {
-	Host string `tcl:"ServerHostCommand"`
-	Port int    `tcl:"ServerPortCommand"`
+	Host   string `tcl:"ServerHostCommand"`
+	Port   int    `tcl:"ServerPortCommand"`
+
+	// Secret is generated at startup time
+	Secret xid.ID
 }
 
 type StorageConfig struct {
@@ -34,9 +38,11 @@ type UsersConfig struct {
 }
 
 type JobConfig struct {
-	Name string    `json:"name"`
+	ID      xid.ID `json:"id"`
+	Name    string `json:"name"`
 	Workdir string `josn:"workdir"`
-	Run string     `json:"run"`
+	Run     string `json:"run"`
+	LastRun int    `json:"last_run"`
 }
 
 type JobsConfig struct {
@@ -104,6 +110,15 @@ func (j *JobConfig) Execute() error {
 	// Trigger execution of job
 
 	return nil
+}
+
+func (j *JobsConfig) GetByID(ID string) (*JobConfig, error) {
+	for _, job := range j.Jobs {
+		if job.ID.String() == ID {
+			return job, nil
+		}
+	}
+	return nil, errors.New("not found")
 }
 
 func (j *JobsConfig) GetByName(name string) (*JobConfig, error) {

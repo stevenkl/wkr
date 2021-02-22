@@ -2,7 +2,8 @@ package main
 
 import (
 	"strconv"
-	
+
+	"github.com/rs/xid"
 	"github.com/stevenkl/tcl.go/pkg/cmds"
 	"github.com/stevenkl/tcl.go/pkg/tcl"
 )
@@ -22,6 +23,7 @@ func ServerCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error)
 	if err != nil {
 		return "", err
 	}
+	config.Server.Secret = xid.New()
 	return "", nil
 }
 
@@ -82,6 +84,7 @@ func UserCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	config.Users.Users = append(config.Users.Users, user)
 	return "", nil
 }
@@ -143,6 +146,8 @@ func JobsCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	job.ID = xid.New()
 	config.Jobs.Jobs = append(config.Jobs.Jobs, job)
 	return "", nil
 }
