@@ -108,3 +108,17 @@ Ziel ist es bei jedem Start mit der selben Konfiguration auch das gleiche Verhal
 * `GET  /jobs/:job_id/:run_id`
 * `GET  /jobs/:job_id/:run_id/stream`
 
+
+## Todo Liste
+Abhakliste zum abhaken
+
+* [x] Konfiguration parsen
+* [ ] User Validierung
+* [ ] Job Validierung
+* [ ] Webserver Status route
+* [ ] Login mit JWT Token
+* [ ] Jobs Status List
+* [ ] Job Details
+* [ ] Job Execution
+* [ ] Job Execution Details
+* [ ] Job Execution Stdout/Stderr Stream
