@@ -10,7 +10,8 @@ SOURCES=main.go \
 		config.go \
 		config_commands.go \
 		config_globals.go \
-		config_validations.go
+		config_validations.go \
+		web.go
 
 # # #
 clear
