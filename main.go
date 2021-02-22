@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/rs/xid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,6 +19,7 @@ var (
 	app    *fiber.App = fiber.New()
 
 	configFile *string = flag.String("config", "wkr.config", "Config file for Wkr")
+	generateID   *bool = flag.Bool("generate-id", false, "Generate an ID for use in your configuration file")
 	generateHash *bool = flag.Bool("generate-hash", false, "Generate a hash from a given password")
 	validateHash *bool = flag.Bool("validate-hash", false, "Validate a password with a hash")
 )
@@ -28,6 +30,12 @@ func init() {
 
 func main() {
 
+	// Generate an ID
+	if *generateID == true {
+		generateIDCommand()
+		os.Exit(0)
+	}
+	
 	// Generating a hash
 	if *generateHash == true {
 		generateHashCommand()
@@ -68,6 +76,11 @@ func main() {
 	
 }
 
+func generateIdentifier() (string, error) {
+	guid := xid.New()
+	return guid.String(), nil
+}
+
 func generatePasswordHash(password string) (string, error) {
 	hashed, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if err != nil {
@@ -82,6 +95,21 @@ func validatePasswordHash(password, hash string) bool {
 		return false
 	}
 	return true
+}
+
+func writeNewJobToConfigfile(name, workdir, command string) error {
+	return nil
+}
+
+func generateIDCommand() {
+	if len(os.Args) != 2 {
+		log.Fatal("Wrong arguments count!")
+	}
+	guid, err := generateIdentifier()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(guid)
 }
 
 // generateHashCommand is invoked when `wkr -generate-hash` is called

@@ -2,6 +2,8 @@ package main
 
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 	
 	"github.com/gofiber/fiber/v2"
@@ -25,7 +27,9 @@ func registerAppHandlers() {
 	}))
 
 	jobs.Get("/", jobsIndexHandler)
-	jobs.Get("/:job_id", jobsDetailsHandler)
+	jobs.Get("/:job_id", jobDetailsHandler)
+	jobs.Get("/:job_id/run", jobRunHandler)
+	jobs.Get("/:job_id/:run_id", jobRunDetailsHandler)
 
 	app.Mount("/jobs", jobs)
 }
@@ -74,11 +78,11 @@ func jobsIndexHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"status": "success",
-		"data": config.Jobs.Jobs,
+		"data": config.Jobs,
 	})
 }
 
-func jobsDetailsHandler(c *fiber.Ctx) error {
+func jobDetailsHandler(c *fiber.Ctx) error {
 	search := c.Params("job_id")
 	job, err := config.Jobs.GetByID(search)
 	if err != nil {
@@ -88,4 +92,17 @@ func jobsDetailsHandler(c *fiber.Ctx) error {
 		"status": "success",
 		"data": job,
 	})
+}
+
+func jobRunHandler(c *fiber.Ctx) error {
+
+	jobID := c.Params("job_id")
+	return c.SendString("Executing job " + jobID)
+}
+
+func jobRunDetailsHandler(c *fiber.Ctx) error {
+	jobID := c.Params("job_id")
+	runID, _ := strconv.Atoi(c.Params("run_id"))
+
+	return c.SendString(fmt.Sprintf("Run nr. %d for job %s doesn't exist.", runID, jobID))
 }

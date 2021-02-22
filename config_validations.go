@@ -24,14 +24,14 @@ func validateStorageConfig(c *Config) error {
 }
 
 func validateUsersConfig(c *Config) error {
-	if len(c.Users.Users) <= 0 {
+	if len(c.Users) <= 0 {
 		return errors.New("it must at least one user be defined")
 	}
 	return nil
 }
 
 func validateJobsConfig(c *Config) error {
-	if len(c.Jobs.Jobs) <= 0 {
+	if len(c.Jobs) <= 0 {
 		return errors.New("it must at least one job be defined")
 	}
 	return nil

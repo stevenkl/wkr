@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+OPTION=$1
 TARGET="wkr"
 
 if [ $(uname -s) = "Windows_NT" ]; then
@@ -16,5 +17,9 @@ SOURCES=main.go \
 # # #
 clear
 
-go build -v -o $TARGET $SOURCES \
-	&& ./wkr.exe
+go build -v -o $TARGET $SOURCES
+
+
+if [ "$OPTION" = "-run" ]; then
+	"./$TARGET"
+fi

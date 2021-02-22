@@ -85,7 +85,7 @@ func UserCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 		return "", err
 	}
 
-	config.Users.Users = append(config.Users.Users, user)
+	config.Users = append(config.Users, *user)
 	return "", nil
 }
 
@@ -137,6 +137,7 @@ func JobsCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 
 	job := new(JobConfig)
 	sub := tcl.InitInterp()
+	sub.RegisterCommand("id", JobIDCommand, job)
 	sub.RegisterCommand("name", JobNameCommand, job)
 	sub.RegisterCommand("workdir", JobWorkdirCommand, job)
 	sub.RegisterCommand("run", JobRunCommand, job)
@@ -147,8 +148,20 @@ func JobsCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
 		return "", err
 	}
 
-	job.ID = xid.New()
-	config.Jobs.Jobs = append(config.Jobs.Jobs, job)
+	config.Jobs = append(config.Jobs, *job)
+	return "", nil
+}
+
+func JobIDCommand(i *tcl.Interp, argv []string, pd interface{}) (string, error) {
+	if len(argv) != 2 {
+		return "", cmds.ArityErr(i, "id", argv)
+	}
+	job := pd.(*JobConfig)
+	guid, err := xid.FromString(argv[1])
+	if err != nil {
+		job.ID = xid.New()
+	}
+	job.ID = guid
 	return "", nil
 }
 

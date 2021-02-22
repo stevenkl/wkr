@@ -9,15 +9,15 @@ import (
 
 // Config struct is the global Configuration element
 type Config struct {
-	Server  ServerConfig  `tcl:"ServerCommand"`
-	Storage StorageConfig `tcl:"StorageCommand"`
-	Users   UsersConfig   `tcl:"UsersCommand"`
-	Jobs    JobsConfig    `tcl:"JobsCommand"`
+	Server  ServerConfig  `tcl:"server,block"`
+	Storage StorageConfig `tcl:"storage,block"`
+	Users   UsersConfig   `tcl:"user,block"`
+	Jobs    JobsConfig    `tcl:"job,block"`
 }
 
 type ServerConfig struct {
-	Host   string `tcl:"ServerHostCommand"`
-	Port   int    `tcl:"ServerPortCommand"`
+	Host string `tcl:"ServerHostCommand"`
+	Port int    `tcl:"ServerPortCommand"`
 
 	// Secret is generated at startup time
 	Secret xid.ID
@@ -33,9 +33,8 @@ type UserConfig struct {
 	Group    string `json:"group"`
 }
 
-type UsersConfig struct {
-	Users []*UserConfig
-}
+
+type UsersConfig []UserConfig
 
 type JobConfig struct {
 	ID      xid.ID `json:"id"`
@@ -45,10 +44,7 @@ type JobConfig struct {
 	LastRun int    `json:"last_run"`
 }
 
-type JobsConfig struct {
-	Jobs []*JobConfig
-}
-
+type JobsConfig []JobConfig
 
 // Parse parses the given string as a tcl script
 func (c *Config) Parse(input string) error {
@@ -60,7 +56,7 @@ func (c *Config) Parse(input string) error {
 	i.RegisterCommand("user", UserCommand, nil)
 	i.RegisterCommand("job", JobsCommand, nil)
 	registerGlobalCommands(i)
-	
+
 	_, err := i.Eval(input)
 	if err != nil {
 		return err
@@ -88,9 +84,9 @@ func (c *Config) Validate() error {
 
 // GetByName searches []*UsersConfig.users for a user with the given name
 func (c *UsersConfig) GetByName(name string) (*UserConfig, error) {
-	for _, user := range c.Users {
+	for _, user := range *c {
 		if user.Name == name {
-			return user, nil
+			return &user, nil
 		}
 	}
 	return nil, errors.New("not found")
@@ -98,9 +94,9 @@ func (c *UsersConfig) GetByName(name string) (*UserConfig, error) {
 
 func (c *UsersConfig) GetByGroup(group string) ([]*UserConfig, error) {
 	users := make([]*UserConfig, 0)
-	for _, user := range c.Users {
+	for _, user := range *c {
 		if user.Group == group {
-			users = append(users, user)
+			users = append(users, &user)
 		}
 	}
 	return users, nil
@@ -113,18 +109,18 @@ func (j *JobConfig) Execute() error {
 }
 
 func (j *JobsConfig) GetByID(ID string) (*JobConfig, error) {
-	for _, job := range j.Jobs {
+	for _, job := range *j {
 		if job.ID.String() == ID {
-			return job, nil
+			return &job, nil
 		}
 	}
 	return nil, errors.New("not found")
 }
 
 func (j *JobsConfig) GetByName(name string) (*JobConfig, error) {
-	for _, job := range j.Jobs {
+	for _, job := range *j {
 		if job.Name == name {
-			return job, nil
+			return &job, nil
 		}
 	}
 	return nil, errors.New("not found")
